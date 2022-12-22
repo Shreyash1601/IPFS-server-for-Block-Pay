@@ -1,6 +1,7 @@
 import express from 'express';
-import * as IPFS from "ipfs-core";
+import * as IPFS from "ipfs";
 import * as nodemailer from 'nodemailer';
+import cors from 'cors';
 import fetch from 'node-fetch'
 const hostname='0.0.0.0';
 var ipfs;
@@ -8,7 +9,9 @@ var ipfs;
 
 const server=express()
 server.use(express.json())
-
+server.use(cors({
+  origin:"*"
+}))
 
 server.post("/ipfs",async (req,res)=>{
   let mailTransporter = nodemailer.createTransport({
@@ -35,7 +38,7 @@ server.post("/ipfs",async (req,res)=>{
   }
   mailTransporter.sendMail(mailDetails, function(err, data) {
     if(err) {
-        console.log('Error Occurs');
+        console.log('Email Error Occurs');
     } else {
         console.log('Email sent successfully');
     }
