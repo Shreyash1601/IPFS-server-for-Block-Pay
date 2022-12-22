@@ -65,6 +65,6 @@ server.get('/',(req,res)=>{
 
 
 server.listen(process.env.PORT||5000,hostname,async ()=>{
-  ipfs=await IPFS.create()
+  ipfs=await IPFS.create({repo: 'blockpay' + Math.random()})
   console.log("IPFS server is running")
   })
