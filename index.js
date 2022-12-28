@@ -2,7 +2,6 @@ import express from 'express';
 import * as IPFS from "ipfs-core";
 import * as nodemailer from 'nodemailer';
 import cors from 'cors';
-import base32 from 'base32'
 const hostname='0.0.0.0';
 var ipfs;
 
