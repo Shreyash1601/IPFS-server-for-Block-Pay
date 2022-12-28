@@ -1,8 +1,8 @@
 import express from 'express';
-import * as IPFS from "ipfs";
+import * as IPFS from "ipfs-core";
 import * as nodemailer from 'nodemailer';
 import cors from 'cors';
-import fetch from 'node-fetch'
+import base32 from 'base32'
 const hostname='0.0.0.0';
 var ipfs;
 
@@ -12,6 +12,23 @@ server.use(express.json())
 server.use(cors({
   origin:"*"
 }))
+
+server.post("/data",async (req,res)=>{
+  console.log("Inside /data")
+  console.log(req.body)
+  const stream = ipfs.cat(base32.encode(req.body));
+const decoder = new TextDecoder()
+let data = ''
+
+for await (const chunk of stream) {
+
+  data += decoder.decode(chunk, { stream: true })
+}
+
+console.log(data)
+  res.status(200).json({data:JSON.parse(data)})
+})
+
 
 server.post("/ipfs",async (req,res)=>{
   let mailTransporter = nodemailer.createTransport({
@@ -38,6 +55,7 @@ server.post("/ipfs",async (req,res)=>{
   }
   mailTransporter.sendMail(mailDetails, function(err, data) {
     if(err) {
+      console.log(err)
         console.log('Email Error Occurs');
     } else {
         console.log('Email sent successfully');
@@ -45,19 +63,13 @@ server.post("/ipfs",async (req,res)=>{
 });
   res.status(200).json({data:cid.toString()})
 })
-server.post("/data",async (req,res)=>{
-  const stream = ipfs.cat(req.body.CID);
-const decoder = new TextDecoder()
-let data = ''
 
-for await (const chunk of stream) {
 
-  data += decoder.decode(chunk, { stream: true })
-}
+server.use(cors({
+  origin:"*"
+}))
 
-console.log(data)
-  res.status(200).json({data:JSON.parse(data)})
-})
+
 
 server.get('/',(req,res)=>{
   res.send("Welcome to IPFS server made specifically for Block Pe")
@@ -65,6 +77,6 @@ server.get('/',(req,res)=>{
 
 
 server.listen(process.env.PORT||5000,hostname,async ()=>{
-  ipfs=await IPFS.create({repo: 'blockpay' + Math.random()})
+  ipfs=await IPFS.create()
   console.log("IPFS server is running")
   })
