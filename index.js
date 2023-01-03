@@ -1,5 +1,5 @@
 import express from 'express';
-import * as IPFS from "ipfs-core";
+import * as IPFS from 'ipfs';
 import * as nodemailer from 'nodemailer';
 import cors from 'cors';
 const hostname='0.0.0.0';
@@ -15,7 +15,7 @@ server.use(cors({
 server.post("/data",async (req,res)=>{
   console.log("Inside /data")
   console.log(req.body)
-  const stream = ipfs.cat(base32.encode(req.body));
+  const stream = ipfs.cat(req.body.CID);
 const decoder = new TextDecoder()
 let data = ''
 
